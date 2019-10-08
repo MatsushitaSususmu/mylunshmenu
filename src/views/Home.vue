@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <!-- <HelloWorld msg="Welcome to Your Vue.ts" /> -->
+    <img alt="Vue logo" src="../assets/lunchbox.png" />
     <LunchMenu msg="Welcome to Your Vue.js + TypeScript App" />
   </div>
 </template>

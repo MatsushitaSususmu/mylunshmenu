@@ -4,10 +4,10 @@
       <h1>昼食メニュー</h1>
     </div>
     <div>
-      <b-button :label="input" @click="input" class="register"></b-button>
+      <b-button :label="input" @click="openForm" class="register"></b-button>
       <b-table striped hover focusable :data="products" :columns="columns"></b-table>
     </div>
-    <div>
+    <div v-if="register">
       <input-menu></input-menu>
     </div>
   </div>
@@ -32,8 +32,9 @@ Vue.use(Buefy);
   }
 })
 export default class LunchMenu extends Vue {
-  input: string = "登録";
+  input: string = "今日のメニューを入力";
   products: ProductItem[] = [];
+  register: boolean = false;
   columns = [
     {
       field: "name",
@@ -78,6 +79,9 @@ export default class LunchMenu extends Vue {
         });
       });
     });
+  }
+  openForm(): void {
+    this.register = !this.register;
   }
 }
 </script>
