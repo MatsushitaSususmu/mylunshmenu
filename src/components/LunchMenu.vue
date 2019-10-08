@@ -1,8 +1,11 @@
 <template>
   <div>
-    <b-button :label="input"></b-button>
-    <b-table striped hover :data="products"></b-table>
-    <b-table :data="products" :columns="columns"></b-table>
+    <h2>昼食メニュー</h2>
+    <b-card>
+      <b-button :label="input" @click="input" class="register"></b-button>
+      <b-table striped hover :data="products" :columns="columns"></b-table>
+    </b-card>
+    <InputMenu></InputMenu>
   </div>
 </template>
 <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-app.js"></script>
@@ -14,9 +17,17 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
 import * as firebase from "firebase/app";
+import InputMenu from "@/InputMenu.vue";
+import Vue from "vue";
+import Buefy from "buefy";
+import "buefy/dist/buefy.css";
+Vue.use(Buefy);
 
 @Component
 export default class LunchMenu extends Vue {
+  components: {
+    InputMenu;
+  };
   input: string = "登録";
   products: ProductItem[] = [
     {
@@ -94,5 +105,16 @@ a {
 }
 form {
   width: 200px;
+}
+title {
+  vertical-align: center;
+  font-weight: bold;
+  text-decoration: underline;
+}
+register {
+  margin-left: 15%;
+}
+card {
+  width: 90%;
 }
 </style>
