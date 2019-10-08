@@ -7,8 +7,10 @@
       <b-button :label="input" @click="openForm" class="register"></b-button>
       <b-table striped hover focusable :data="products" :columns="columns"></b-table>
     </div>
-    <div v-if="register">
-      <input-menu></input-menu>
+    <div>
+      <b-modal :active.sync="isComponentModalActive" has-modal-card>
+        <input-menu v-bind="formProps"></input-menu>
+      </b-modal>
     </div>
   </div>
 </template>
@@ -34,7 +36,9 @@ Vue.use(Buefy);
 export default class LunchMenu extends Vue {
   input: string = "今日のメニューを入力";
   products: ProductItem[] = [];
+  isComponentModalActive: boolean = false;
   register: boolean = false;
+  formProps: {};
   columns = [
     {
       field: "name",
@@ -81,7 +85,8 @@ export default class LunchMenu extends Vue {
     });
   }
   openForm(): void {
-    this.register = !this.register;
+    this.isComponentModalActive = !this.isComponentModalActive;
+    console.log(this.isComponentModalActive);
   }
 }
 </script>
