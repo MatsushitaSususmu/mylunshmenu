@@ -1,11 +1,15 @@
 <template>
-  <div>
-    <h2>昼食メニュー</h2>
-    <b-card>
+  <div style="width=80%">
+    <div>
+      <h1>昼食メニュー</h1>
+    </div>
+    <div>
       <b-button :label="input" @click="input" class="register"></b-button>
-      <b-table striped hover :data="products" :columns="columns"></b-table>
-    </b-card>
-    <InputMenu></InputMenu>
+      <b-table striped hover focusable :data="products" :columns="columns"></b-table>
+    </div>
+    <div>
+      <input-menu></input-menu>
+    </div>
   </div>
 </template>
 <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-app.js"></script>
@@ -17,52 +21,43 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
 import * as firebase from "firebase/app";
-import InputMenu from "@/InputMenu.vue";
-import Vue from "vue";
+import InputMenu from "./InputMenu.vue";
 import Buefy from "buefy";
 import "buefy/dist/buefy.css";
 Vue.use(Buefy);
 
-@Component
-export default class LunchMenu extends Vue {
+@Component({
   components: {
-    InputMenu;
-  };
+    InputMenu
+  }
+})
+export default class LunchMenu extends Vue {
   input: string = "登録";
-  products: ProductItem[] = [
-    {
-      cal: 0,
-      name: "",
-      picutureURL: "",
-      productType: "",
-      price: 0,
-      updateTime: "2000/01/01"
-    }
-  ];
+  products: ProductItem[] = [];
   columns = [
     {
       field: "name",
-      label: "Name"
+      label: "名前"
     },
     {
       field: "cal",
-      label: "Cal"
+      label: "カロリー"
     },
     {
       field: "picutureURL",
-      label: "picutureURL"
+      label: "写真"
     },
     {
       field: "productType",
-      label: "productType"
+      label: "種類"
     },
     {
       field: "price",
-      label: "price"
+      label: "価格"
     },
     {
-      field: "updateTime",
-      label: "updateTime"
+      field: "updateDate",
+      label: "日付"
     }
   ];
 
@@ -79,7 +74,7 @@ export default class LunchMenu extends Vue {
           picutureURL: doc.data().picutureURL,
           productType: doc.data().productType,
           price: doc.data().price,
-          updateTime: doc.data().updateTime
+          updateDate: doc.data().update_date
         });
       });
     });
@@ -105,6 +100,10 @@ a {
 }
 form {
   width: 200px;
+}
+table {
+  width: 80%;
+  margin-left: 5%;
 }
 title {
   vertical-align: center;
