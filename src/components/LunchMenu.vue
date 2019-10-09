@@ -5,11 +5,11 @@
     </div>
     <div>
       <b-button :label="input" @click="openForm" class="register"></b-button>
-      <b-table striped hover focusable :data="products" :columns="columns"></b-table>
+      <b-table hover focusable :data="products" :columns="columns"></b-table>
     </div>
     <div>
       <b-modal :active.sync="isComponentModalActive" has-modal-card>
-        <input-menu v-bind="formProps"></input-menu>
+        <input-menu></input-menu>
       </b-modal>
     </div>
   </div>
@@ -24,10 +24,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
 import * as firebase from "firebase/app";
 import InputMenu from "./InputMenu.vue";
-import Buefy from "buefy";
-import "buefy/dist/buefy.css";
-Vue.use(Buefy);
-
 @Component({
   components: {
     InputMenu
@@ -38,7 +34,7 @@ export default class LunchMenu extends Vue {
   products: ProductItem[] = [];
   isComponentModalActive: boolean = false;
   register: boolean = false;
-  formProps: {};
+
   columns = [
     {
       field: "name",
