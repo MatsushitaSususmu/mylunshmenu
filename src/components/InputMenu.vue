@@ -18,7 +18,14 @@
           </b-select>
         </b-field>
         <b-field label="写真">
-          <b-input type="string" v-model="picture"></b-input>
+          <b-upload v-model="picture" v-if="!picture">
+            <div class="button is-primary">
+              <b-icon icon="upload"></b-icon>
+              <p>Click to upload</p>
+            </div>
+          </b-upload>
+          <b-input class="file-name" v-else :value="picture.name" disabled></b-input>
+          <!-- <b-input type="string" v-model="picture"></b-input> -->
         </b-field>
         <div class="card-footer">
           <div>
@@ -57,13 +64,24 @@ export default class InputMenu extends Vue {
     { id: 5, name: "惣菜・おつまみ" },
     { id: 6, name: "菓子" }
   ];
-  picture: string = "";
+  picture = null;
+  mount(): void {
+    this.init();
+  }
+  init() {
+    this.itemName = "";
+    this.price = 0;
+    this.cal = 0;
+    this.type = { id: 1, name: "パン" };
+    this.picture = null;
+  }
   registerStore(): void {
     const productsRef = firebase.firestore().collection("products");
+    console.log(this.picture);
     const registerItem: ProductItem = {
       name: this.itemName,
       cal: this.price,
-      picutureURL: this.picture,
+      picutureURL: this.picture.name || "",
       productType: this.type.name,
       price: this.price,
       updateDate: moment(new Date()).format("YYYY/MM/DD")
@@ -72,6 +90,7 @@ export default class InputMenu extends Vue {
     productsRef.add(registerItem).then(ref => {
       console.log("Added document with ID: ", ref.id);
     });
+    this.init();
   }
 }
 </script>
