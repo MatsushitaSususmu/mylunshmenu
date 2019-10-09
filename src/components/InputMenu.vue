@@ -1,32 +1,33 @@
 <template>
-  <div>
+  <div class="card">
     <form>
-      <div>
-        <section class="title">
-          <b-field label="商品名">
-            <b-input type="text" v-model="itemName"></b-input>
-          </b-field>
-          <b-field label="価格">
-            <b-input type="number" v-model="price"></b-input>
-          </b-field>
-          <b-field label="カロリー">
-            <b-input type="number" v-model="cal"></b-input>
-          </b-field>
-          <b-field label="種別">
-            <b-select v-model="type">
-              <option v-for="option in itemType" :value="option" :key="option.id">{{ option.name }}</option>
-            </b-select>
-          </b-field>
-          <b-field label="写真">
-            <b-input type="string" v-model="picture"></b-input>
-          </b-field>
+      <div class="card-header"></div>
+      <div class="card-content">
+        <b-field label="商品名">
+          <b-input type="text" v-model="itemName"></b-input>
+        </b-field>
+        <b-field label="価格">
+          <b-input type="number" v-model="price"></b-input>
+        </b-field>
+        <b-field label="カロリー">
+          <b-input type="number" v-model="cal"></b-input>
+        </b-field>
+        <b-field label="種別">
+          <b-select v-model="type">
+            <option v-for="option in itemType" :value="option" :key="option.id">{{ option.name }}</option>
+          </b-select>
+        </b-field>
+        <b-field label="写真">
+          <b-input type="string" v-model="picture"></b-input>
+        </b-field>
+        <div class="card-footer">
           <div>
             <b-button label="登録" @click="registerStore"></b-button>
           </div>
           <div class="right-button">
             <b-button label="閉じる" @click="$parent.close()"></b-button>
           </div>
-        </section>
+        </div>
       </div>
     </form>
   </div>
@@ -71,7 +72,6 @@ export default class InputMenu extends Vue {
     productsRef.add(registerItem).then(ref => {
       console.log("Added document with ID: ", ref.id);
     });
-    parent.close();
   }
 }
 </script>
@@ -83,7 +83,7 @@ title {
   text-decoration: underline;
 }
 right-button {
-  margin-left: 5px;
+  margin-left: 20px;
   float: left;
 }
 </style>
