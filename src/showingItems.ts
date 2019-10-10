@@ -1,8 +1,7 @@
-export interface ProductItem {
-  id: string
+export interface ShowingItems {
   name: string
   cal: number
-  picutureURL: string
+  picuture: File | null
   productType: string
   price: number
   updateDate: string

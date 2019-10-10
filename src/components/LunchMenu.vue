@@ -13,7 +13,7 @@
             <b-table
               hover
               focusable
-              :data="products"
+              :data="showingItems"
               :paginated="isPaginated"
               :per-page="perPage"
               :current-page.sync="currentPage"
@@ -25,13 +25,14 @@
               :default-sort-direction="defaultSortDirection"
             >
               <template slot-scope="props">
-                <b-table-column
-                  v-for="column in columns"
-                  :key="column.field"
-                  :field="column.field"
-                  :label="column.label"
-                  sortable
-                >{{ props.row[column.field] }}</b-table-column>
+                <b-table-column field="name" label="商品名" sortable>{{props.row.name}}</b-table-column>
+                <b-table-column field="picture" label="写真" sortable>
+                  <img :src="props.row.picture" width="50" height="38" />
+                </b-table-column>
+                <b-table-column field="price" label="価格(税抜)" sortable>{{props.row.price}}</b-table-column>
+                <b-table-column field="cal" label="カロリー" sortable>{{props.row.cal}}</b-table-column>
+                <b-table-column field="productType" label="種別" sortable>{{props.row.productType}}</b-table-column>
+                <b-table-column field="updateDate" label="日付" sortable>{{props.row.updateDate}}</b-table-column>
               </template>
             </b-table>
           </section>
@@ -40,6 +41,11 @@
           <b-modal :active.sync="isComponentModalActive" has-modal-card>
             <input-menu></input-menu>
           </b-modal>
+        </div>
+        <div>
+          <b-field>
+            <img :src="tmpimages[0]" width="50" height="38" />
+          </b-field>
         </div>
         <div class="card-footer right">
           <b-button :label="input" @click="openForm"></b-button>
@@ -56,6 +62,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
+import { ShowingItems } from "@/showingItems.ts";
 import * as firebase from "firebase/app";
 import InputMenu from "./InputMenu.vue";
 
@@ -67,7 +74,9 @@ import InputMenu from "./InputMenu.vue";
 export default class LunchMenu extends Vue {
   header: string = "テーマ発表　2019デモ";
   input: string = "今日のメニューを入力";
-  products: ProductItem[] = [];
+  items: ProductItem[] = [];
+  showingItems: ShowingItems[] = [];
+  tmpimages: string[] = [];
   isComponentModalActive: boolean = false;
   register: boolean = false;
   sortIcon: string = "arrow-up";
@@ -77,7 +86,7 @@ export default class LunchMenu extends Vue {
   isPaginationSimple: boolean = false;
   paginationPosition: string = "bottom";
   currentPage: number = 1;
-  perPage: number = 4;
+  perPage: number = 10;
   columns = [
     {
       field: "name",
@@ -88,7 +97,7 @@ export default class LunchMenu extends Vue {
       label: "カロリー"
     },
     {
-      field: "picutureURL",
+      field: "picuture",
       label: "写真"
     },
     {
@@ -110,7 +119,8 @@ export default class LunchMenu extends Vue {
 
     await productsRef.get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        this.products.push({
+        this.items.push({
+          id: doc.id,
           name: doc.data().name,
           cal: doc.data().cal,
           picutureURL: doc.data().picutureURL,
@@ -120,6 +130,45 @@ export default class LunchMenu extends Vue {
         });
       });
     });
+
+    this.showingItems = this.items.reduce((acc: ShowingItems[], x) => {
+      const record: ShowingItems = {
+        name: x.name,
+        cal: x.cal,
+        picuture: this.downloadPicture(x.id, x.picutureURL),
+        productType: x.productType,
+        price: x.price,
+        updateDate: x.updateDate
+      };
+      acc.push(record);
+      return acc;
+    }, []);
+
+    console.log(this.showingItems);
+  }
+  downloadPicture(id: string, pictureURL: string): File | null {
+    console.log(pictureURL);
+    let res = null;
+    let i: string[] = [];
+    if (pictureURL == "") {
+      i.push(pictureURL);
+      return res;
+    }
+    const storageRef = firebase.storage().ref();
+
+    storageRef
+      .child(`items/${pictureURL}`)
+      .getDownloadURL()
+      .then(function(url) {
+        console.log("downloaded", url);
+        res = url;
+        i.push(url);
+      })
+      .catch(function(error) {
+        console.log("error");
+      });
+    this.tmpimages = i;
+    return res;
   }
   openForm(): void {
     this.isComponentModalActive = !this.isComponentModalActive;
