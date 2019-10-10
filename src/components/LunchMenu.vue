@@ -1,46 +1,49 @@
 <template>
-  <div class="card">
-    <div class="card-header">
-      <div class="title">
-        <h1>昼食メニュー</h1>
+  <div class="header">
+    <div class="header">{{header}}</div>
+    <div class="card" style="width=60%">
+      <div class="card-header">
+        <div class="title">
+          <h1>昼食メニュー</h1>
+        </div>
       </div>
-    </div>
-    <div class="card-content">
-      <div>
-        <section>
-          <b-table
-            hover
-            focusable
-            :data="products"
-            :paginated="isPaginated"
-            :per-page="perPage"
-            :current-page.sync="currentPage"
-            :pagination-simple="isPaginationSimple"
-            :pagination-position="paginationPosition"
-            :sort-icon="sortIcon"
-            :sort-icon-size="sortIconSize"
-            default-sort="updateDate"
-            :default-sort-direction="defaultSortDirection"
-          >
-            <template slot-scope="props">
-              <b-table-column
-                v-for="column in columns"
-                :key="column.field"
-                :field="column.field"
-                :label="column.label"
-                sortable
-              >{{ props.row[column.field] }}</b-table-column>
-            </template>
-          </b-table>
-        </section>
-      </div>
-      <div>
-        <b-modal :active.sync="isComponentModalActive" has-modal-card>
-          <input-menu></input-menu>
-        </b-modal>
-      </div>
-      <div class="card-footer right">
-        <b-button :label="input" @click="openForm"></b-button>
+      <div class="card-content">
+        <div>
+          <section>
+            <b-table
+              hover
+              focusable
+              :data="products"
+              :paginated="isPaginated"
+              :per-page="perPage"
+              :current-page.sync="currentPage"
+              :pagination-simple="isPaginationSimple"
+              :pagination-position="paginationPosition"
+              :sort-icon="sortIcon"
+              :sort-icon-size="sortIconSize"
+              default-sort="updateDate"
+              :default-sort-direction="defaultSortDirection"
+            >
+              <template slot-scope="props">
+                <b-table-column
+                  v-for="column in columns"
+                  :key="column.field"
+                  :field="column.field"
+                  :label="column.label"
+                  sortable
+                >{{ props.row[column.field] }}</b-table-column>
+              </template>
+            </b-table>
+          </section>
+        </div>
+        <div>
+          <b-modal :active.sync="isComponentModalActive" has-modal-card>
+            <input-menu></input-menu>
+          </b-modal>
+        </div>
+        <div class="card-footer right">
+          <b-button :label="input" @click="openForm"></b-button>
+        </div>
       </div>
     </div>
   </div>
@@ -62,6 +65,7 @@ import InputMenu from "./InputMenu.vue";
   }
 })
 export default class LunchMenu extends Vue {
+  header: string = "テーマ発表　2019デモ";
   input: string = "今日のメニューを入力";
   products: ProductItem[] = [];
   isComponentModalActive: boolean = false;
@@ -142,6 +146,9 @@ a {
 }
 form {
   width: 200px;
+}
+header {
+  height: 20%;
 }
 table {
   width: 80%;

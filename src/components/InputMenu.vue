@@ -93,11 +93,14 @@ export default class InputMenu extends Vue {
       console.log("Added document with ID: ", ref.id);
     });
 
-    // const storageRef = firebase.storage().ref();
-    // const file = storageRef.child(this.picture.name);
-    // storageRef.put(file).then(function(snapshot) {
-    //   console.log("Uploaded a blob or file!");
-    // });
+    const storageRef = firebase.storage().ref();
+    storageRef
+      .child(`items/${this.picture.name}`)
+      .put(this.picture)
+      .then(function(snapshot) {
+        console.log("Uploaded a blob or file!");
+      });
+
     this.init();
   }
 }
