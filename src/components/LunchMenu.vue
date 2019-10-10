@@ -7,21 +7,25 @@
     </div>
     <div class="card-content">
       <div>
-        <b-button :label="input" @click="openForm" class="register"></b-button>
         <section>
           <b-table
             hover
             focusable
+            :data="products"
+            :paginated="isPaginated"
+            :per-page="perPage"
+            :current-page.sync="currentPage"
+            :pagination-simple="isPaginationSimple"
+            :pagination-position="paginationPosition"
             :sort-icon="sortIcon"
             :sort-icon-size="sortIconSize"
             default-sort="updateDate"
             :default-sort-direction="defaultSortDirection"
-            :data="products"
           >
             <template slot-scope="props">
               <b-table-column
                 v-for="column in columns"
-                :key="`${column.field}`"
+                :key="column.field"
                 :field="column.field"
                 :label="column.label"
                 sortable
@@ -34,6 +38,9 @@
         <b-modal :active.sync="isComponentModalActive" has-modal-card>
           <input-menu></input-menu>
         </b-modal>
+      </div>
+      <div class="card-footer right">
+        <b-button :label="input" @click="openForm"></b-button>
       </div>
     </div>
   </div>
@@ -62,7 +69,11 @@ export default class LunchMenu extends Vue {
   sortIcon: string = "arrow-up";
   sortIconSize: string = "is-small";
   defaultSortDirection: string = "asc";
-
+  isPaginated: boolean = true;
+  isPaginationSimple: boolean = false;
+  paginationPosition: string = "bottom";
+  currentPage: number = 1;
+  perPage: number = 4;
   columns = [
     {
       field: "name",
@@ -101,7 +112,7 @@ export default class LunchMenu extends Vue {
           picutureURL: doc.data().picutureURL,
           productType: doc.data().productType,
           price: doc.data().price,
-          updateDate: doc.data().update_date
+          updateDate: doc.data().updateDate
         });
       });
     });
@@ -144,7 +155,7 @@ title {
 register {
   margin-left: 15%;
 }
-card {
-  width: 90%;
+right {
+  vertical-align: right;
 }
 </style>
