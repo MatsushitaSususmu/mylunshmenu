@@ -1,16 +1,40 @@
 <template>
-  <div style="width=80%">
-    <div>
-      <h1>昼食メニュー</h1>
+  <div class="card">
+    <div class="card-header">
+      <div class="title">
+        <h1>昼食メニュー</h1>
+      </div>
     </div>
-    <div>
-      <b-button :label="input" @click="openForm" class="register"></b-button>
-      <b-table hover focusable :data="products" :columns="columns"></b-table>
-    </div>
-    <div>
-      <b-modal :active.sync="isComponentModalActive" has-modal-card>
-        <input-menu></input-menu>
-      </b-modal>
+    <div class="card-content">
+      <div>
+        <b-button :label="input" @click="openForm" class="register"></b-button>
+        <section>
+          <b-table
+            hover
+            focusable
+            :sort-icon="sortIcon"
+            :sort-icon-size="sortIconSize"
+            default-sort="updateDate"
+            :default-sort-direction="defaultSortDirection"
+            :data="products"
+          >
+            <template slot-scope="props">
+              <b-table-column
+                v-for="column in columns"
+                :key="`${column.field}`"
+                :field="column.field"
+                :label="column.label"
+                sortable
+              >{{ props.row[column.field] }}</b-table-column>
+            </template>
+          </b-table>
+        </section>
+      </div>
+      <div>
+        <b-modal :active.sync="isComponentModalActive" has-modal-card>
+          <input-menu></input-menu>
+        </b-modal>
+      </div>
     </div>
   </div>
 </template>
@@ -24,6 +48,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
 import * as firebase from "firebase/app";
 import InputMenu from "./InputMenu.vue";
+
 @Component({
   components: {
     InputMenu
@@ -34,6 +59,9 @@ export default class LunchMenu extends Vue {
   products: ProductItem[] = [];
   isComponentModalActive: boolean = false;
   register: boolean = false;
+  sortIcon: string = "arrow-up";
+  sortIconSize: string = "is-small";
+  defaultSortDirection: string = "asc";
 
   columns = [
     {
@@ -64,8 +92,6 @@ export default class LunchMenu extends Vue {
 
   async mounted() {
     const productsRef = firebase.firestore().collection("products");
-
-    const temp = [{}];
 
     await productsRef.get().then(querySnapshot => {
       querySnapshot.forEach(doc => {

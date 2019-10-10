@@ -4,5 +4,5 @@ export interface ProductItem {
   picutureURL: string
   productType: string
   price: number
-  updateDate: string | Date
+  updateDate: string
 }
