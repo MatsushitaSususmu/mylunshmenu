@@ -44,7 +44,7 @@
         </div>
         <div>
           <b-field>
-            <img :src="tmpimages[0]" width="50" height="38" />
+            <img src="../assets/lunchbox.png" width="50" height="38" />
           </b-field>
         </div>
         <div class="card-footer right">
@@ -76,7 +76,7 @@ export default class LunchMenu extends Vue {
   input: string = "今日のメニューを入力";
   items: ProductItem[] = [];
   showingItems: ShowingItems[] = [];
-  tmpimages: string[] = [];
+  tmpimages: [{ id: string; img: string }] = [{ id: "", img: "" }];
   isComponentModalActive: boolean = false;
   register: boolean = false;
   sortIcon: string = "arrow-up";
@@ -132,42 +132,30 @@ export default class LunchMenu extends Vue {
     });
 
     this.showingItems = this.items.reduce((acc: ShowingItems[], x) => {
-      const record: ShowingItems = {
-        name: x.name,
-        cal: x.cal,
-        picuture: this.downloadPicture(x.id, x.picutureURL),
-        productType: x.productType,
-        price: x.price,
-        updateDate: x.updateDate
-      };
-      acc.push(record);
+      this.downloadPicture(x.id, x.picutureURL).then(function(value) {
+        const record: ShowingItems = {
+          name: x.name,
+          cal: x.cal,
+          picture: value || "../assets/lunchbox.png",
+          productType: x.productType,
+          price: x.price,
+          updateDate: x.updateDate
+        };
+        acc.push(record);
+      });
       return acc;
     }, []);
-
-    console.log(this.showingItems);
   }
-  downloadPicture(id: string, pictureURL: string): File | null {
-    console.log(pictureURL);
-    let res = null;
-    let i: string[] = [];
-    if (pictureURL == "") {
-      i.push(pictureURL);
-      return res;
-    }
+  async downloadPicture(id: string, pictureURL: string) {
+    let res: string | null = null;
     const storageRef = firebase.storage().ref();
 
-    storageRef
-      .child(`items/${pictureURL}`)
-      .getDownloadURL()
-      .then(function(url) {
-        console.log("downloaded", url);
-        res = url;
-        i.push(url);
-      })
-      .catch(function(error) {
-        console.log("error");
-      });
-    this.tmpimages = i;
+    if (pictureURL == "") {
+      res = await storageRef.child(`items/noimg.png`).getDownloadURL();
+      return res;
+    }
+
+    res = await storageRef.child(`items/${pictureURL}`).getDownloadURL();
     return res;
   }
   openForm(): void {

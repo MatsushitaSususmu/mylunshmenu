@@ -8,6 +8,7 @@
 
 - [Typescript の型入門](https://qiita.com/uhyo/items/e2fdef2d3236b9bfe74a)
 - [敗北者の Typescript](https://qiita.com/uhyo/items/aae57ba0734e36ee846a)
+- [Javascriptの==](https://qiita.com/righteous/items/d511b7d056ba93e1d219)
 
 ```bash
 cd <プロジェクト名>
