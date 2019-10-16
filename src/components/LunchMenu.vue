@@ -113,13 +113,17 @@ export default class LunchMenu extends Vue {
       label: "日付"
     }
   ];
-  closeForm(): void {
+  async closeForm(): void {
     this.isComponentModalActive = false;
+    await this.createShowingList();
   }
 
   async mounted() {
+    await this.createShowingList();
+  }
+  async createShowingList() {
+    this.items = [];
     const productsRef = firebase.firestore().collection("products");
-
     await productsRef.get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
         this.items.push({
