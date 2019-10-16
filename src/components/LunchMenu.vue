@@ -1,6 +1,7 @@
 <template>
   <div class="header">
     <div class="header">{{header}}</div>
+    <aside class="section"></aside>
     <div class="card" style="width=60%">
       <div class="card-header">
         <div class="title">
@@ -39,7 +40,7 @@
         </div>
         <div>
           <b-modal :active.sync="isComponentModalActive" has-modal-card>
-            <input-menu></input-menu>
+            <input-menu v-if="isComponentModalActive" @register="closeForm" @closeForm="closeForm"></input-menu>
           </b-modal>
         </div>
         <div>
@@ -76,7 +77,6 @@ export default class LunchMenu extends Vue {
   input: string = "今日のメニューを入力";
   items: ProductItem[] = [];
   showingItems: ShowingItems[] = [];
-  tmpimages: [{ id: string; img: string }] = [{ id: "", img: "" }];
   isComponentModalActive: boolean = false;
   register: boolean = false;
   sortIcon: string = "arrow-up";
@@ -113,6 +113,9 @@ export default class LunchMenu extends Vue {
       label: "日付"
     }
   ];
+  closeForm(): void {
+    this.isComponentModalActive = false;
+  }
 
   async mounted() {
     const productsRef = firebase.firestore().collection("products");

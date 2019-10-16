@@ -1,48 +1,51 @@
 <template>
-  <div class="card">
-    <div class="card-header"></div>
-    <div class="card-content">
-      <b-field label="商品名">
-        <b-input type="text" v-model="itemName"></b-input>
-      </b-field>
-      <b-field label="価格">
-        <b-input type="number" v-model="price"></b-input>
-      </b-field>
-      <b-field label="カロリー">
-        <b-input type="number" v-model="cal"></b-input>
-      </b-field>
-      <b-field label="種別">
-        <b-select v-model="type">
-          <option v-for="option in itemType" :value="option" :key="option.id">{{ option.name }}</option>
-        </b-select>
-      </b-field>
-      <b-field label="写真">
-        <b-upload v-model="picture" v-if="!picture">
-          <div class="button is-primary">
-            <b-icon icon="upload"></b-icon>
-            <p>Click to upload</p>
+  <form action>
+    <div class="card">
+      <div class="card-header"></div>
+      <div class="card-content">
+        <b-field label="商品名">
+          <b-input type="text" v-model="itemName"></b-input>
+        </b-field>
+        <b-field label="価格">
+          <b-input type="number" v-model="price"></b-input>
+        </b-field>
+        <b-field label="カロリー">
+          <b-input type="number" v-model="cal"></b-input>
+        </b-field>
+        <b-field label="種別">
+          <b-select v-model="type">
+            <option v-for="option in itemType" :value="option" :key="option.id">{{ option.name }}</option>
+          </b-select>
+        </b-field>
+        <b-field label="写真">
+          <b-upload v-model="picture" v-if="!picture">
+            <div class="button">
+              <b-icon icon="upload"></b-icon>
+              <p>Click to upload</p>
+            </div>
+          </b-upload>
+          <b-input class="file-name" v-else :value="picture.name" disabled></b-input>
+        </b-field>
+        <div class="card-footer">
+          <div>
+            <b-button label="登録" @click="registerStore()" class="is-primary"></b-button>
           </div>
-        </b-upload>
-        <b-input class="file-name" v-else :value="picture.name" disabled></b-input>
-      </b-field>
-      <div class="card-footer">
-        <div>
-          <b-button label="登録" @click="registerStore"></b-button>
-        </div>
-        <div class="right-button">
-          <b-button label="閉じる" @click="$parent.close()"></b-button>
+          <div class="right-button">
+            <b-button label="閉じる" @click="closeForm()"></b-button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-storage.js"></script>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Emit, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
+import { InputItem } from "@/input.ts";
 import * as firebase from "firebase/app";
 import moment from "moment";
 
@@ -64,6 +67,8 @@ export default class InputMenu extends Vue {
     { id: 8, name: "菓子" }
   ];
   picture: File | null = null;
+  @Emit("closeForm")
+  closeForm(): void {}
   mount(): void {
     this.init();
   }
@@ -79,8 +84,7 @@ export default class InputMenu extends Vue {
       return;
     }
     const productsRef = firebase.firestore().collection("products");
-    console.log(this.picture);
-    const registerItem: ProductItem = {
+    const registerItem: InputItem = {
       name: this.itemName,
       cal: this.cal,
       picutureURL: this.picture ? this.picture.name : "",
@@ -103,6 +107,9 @@ export default class InputMenu extends Vue {
         });
     }
 
+    //このModalを閉じたいリロードしたい
+    this.closeForm();
+    console.log("emited");
     this.init();
   }
 }

@@ -1,5 +1,4 @@
-export interface ProductItem {
-  id: string
+export interface InputItem {
   name: string
   cal: number
   picutureURL: string
