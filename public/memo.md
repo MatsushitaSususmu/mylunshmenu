@@ -9,6 +9,8 @@
 - [Typescript の型入門](https://qiita.com/uhyo/items/e2fdef2d3236b9bfe74a)
 - [敗北者の Typescript](https://qiita.com/uhyo/items/aae57ba0734e36ee846a)
 - [Javascriptの==](https://qiita.com/righteous/items/d511b7d056ba93e1d219)
+- [Vue.js+TypeScriptの書き方一覧](https://qiita.com/ryo2132/items/4d43209ea89ad1297426)
+- [モーダルダイアログ](https://techblo.shikataramuno.com/entry/2018/11/30/111101)
 
 ```bash
 cd <プロジェクト名>
