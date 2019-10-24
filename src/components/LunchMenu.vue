@@ -8,8 +8,9 @@
           <h1>昼食メニュー</h1>
         </div>
       </div>
+      <div class="card-content">{{calculateResult}}</div>
+
       <div class="card-content">
-        <div class="card-content">{{calculateResult}}</div>
         <section>
           <b-table
             striped
@@ -59,8 +60,8 @@
       </div>
       <div class="card-footer right">
         <b-button :label="input" @click="openForm" class="is-primary"></b-button>
-        <b-button :label="calcCal" @click="openForm" class="is-primary right"></b-button>
-        <b-button :label="calcSpending" @click="openForm" class="is-primary right"></b-button>
+        <b-button :label="calcDaily" @click="extractDaily" class="is-primary right"></b-button>
+        <b-button :label="calcWeekly" @click="extractWeekly" class="is-primary right"></b-button>
       </div>
     </div>
   </div>
@@ -86,14 +87,15 @@ import moment from "moment";
 export default class LunchMenu extends Vue {
   header: string = "テーマ発表2019デモ";
   input: string = "今日のメニューを入力";
-  calcCal: string = "カロリー計算";
-  calcSpending: string = "支出計算";
+  calcDaily: string = "1日のカロリー・支出";
+  calcWeekly: string = "直近1週間のカロリー・支出";
   calculateResult: string = "";
   totalCal: number = 0;
   totalSpending: number = 0;
   items: ProductItem[] = [];
   showingItems: ShowingItems[] = [];
   isComponentModalActive: boolean = false;
+  taxRate: number = 1.08;
   register: boolean = false;
   sortIcon: string = "arrow-up";
   sortIconSize: string = "is-small";
@@ -163,10 +165,6 @@ export default class LunchMenu extends Vue {
       });
       return acc;
     }, []);
-
-    this.calculateResult = `${moment(new Date()).format(
-      "YYYY/MM/DD"
-    )}の支出合計：${this.totalSpending}円<br>摂取カロリー：${this.totalCal}cal`;
   }
   async downloadPicture(id: string, pictureURL: string): Promise<string> {
     let res: string = "";
@@ -187,6 +185,73 @@ export default class LunchMenu extends Vue {
   async closeForm() {
     this.isComponentModalActive = false;
     await this.createShowingList();
+  }
+  extractDaily() {
+    const now = moment(new Date()).format("YYYY/MM/DD");
+    const selected: ShowingItems[] = this.showingItems.reduce(
+      (acc: ShowingItems[], x) => {
+        if (x.updateDate === now) {
+          const record: ShowingItems = {
+            name: x.name,
+            cal: x.cal,
+            picture: x.picture,
+            productType: x.productType,
+            price: x.price,
+            updateDate: x.updateDate
+          };
+          acc.push(record);
+        }
+        return acc;
+      },
+      []
+    );
+
+    this.showingItems = selected;
+    this.totalSpending = Math.floor(
+      selected.map(x => x.price).reduce((acc, x) => Number(acc) + Number(x)) *
+        this.taxRate
+    );
+    this.totalCal = selected
+      .map(x => x.cal)
+      .reduce((acc, x) => Number(acc) + Number(x));
+    this.calculateResult = `
+    ${now}の
+    支出合計：${this.totalSpending}円(税込)
+    摂取カロリー：${this.totalCal}cal`;
+    console.log(this.calculateResult);
+  }
+  extractWeekly() {
+    const now = moment(new Date()).format("YYYY/MM/DD");
+    const from = moment()
+      .subtract(1, "week")
+      .format("YYYY/MM/DD");
+    const selected: ShowingItems[] = this.showingItems.reduce(
+      (acc: ShowingItems[], x) => {
+        if (from < x.updateDate && x.updateDate <= now) {
+          const record: ShowingItems = {
+            name: x.name,
+            cal: x.cal,
+            picture: x.picture,
+            productType: x.productType,
+            price: x.price,
+            updateDate: x.updateDate
+          };
+          acc.push(record);
+        }
+        return acc;
+      },
+      []
+    );
+    this.showingItems = selected;
+    this.totalSpending = Math.floor(
+      selected.map(x => x.price).reduce((acc, x) => Number(acc) + Number(x)) *
+        this.taxRate
+    );
+    this.totalCal = selected
+      .map(x => x.cal)
+      .reduce((acc, x) => Number(acc) + Number(x));
+    this.calculateResult = `${from}~${now}の支出合計：${this.totalSpending}円(税込)\n
+    摂取カロリー：${this.totalCal}cal`;
   }
 }
 </script>
