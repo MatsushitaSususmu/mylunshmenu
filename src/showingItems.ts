@@ -1,7 +1,7 @@
 export interface ShowingItems {
   name: string
   cal: number
-  picture: string | null
+  picture: string
   productType: string
   price: number
   updateDate: string

@@ -60,6 +60,12 @@
       </div>
       <div class="card-footer right">
         <b-button :label="input" @click="openForm" class="is-primary"></b-button>
+        <b-datepicker
+          placeholder="日付を選択"
+          v-model="selectedDate"
+          icon="calendar-today"
+          class="right"
+        ></b-datepicker>
         <b-button :label="calcDaily" @click="extractDaily" class="is-primary right"></b-button>
         <b-button :label="calcWeekly" @click="extractWeekly" class="is-primary right"></b-button>
       </div>
@@ -85,26 +91,32 @@ import moment from "moment";
   }
 })
 export default class LunchMenu extends Vue {
+  items: ProductItem[] = [];
+  showingItems: ShowingItems[] = [];
+
   header: string = "テーマ発表2019デモ";
   input: string = "今日のメニューを入力";
   calcDaily: string = "1日のカロリー・支出";
   calcWeekly: string = "直近1週間のカロリー・支出";
   calculateResult: string = "";
-  totalCal: number = 0;
-  totalSpending: number = 0;
-  items: ProductItem[] = [];
-  showingItems: ShowingItems[] = [];
-  isComponentModalActive: boolean = false;
-  taxRate: number = 1.08;
-  register: boolean = false;
   sortIcon: string = "arrow-up";
   sortIconSize: string = "is-small";
   defaultSortDirection: string = "asc";
-  isPaginated: boolean = true;
-  isPaginationSimple: boolean = false;
   paginationPosition: string = "bottom";
+
   currentPage: number = 1;
   perPage: number = 8;
+  totalCal: number = 0;
+  totalSpending: number = 0;
+  taxRate: number = 1.08;
+
+  selectedDate: Date = new Date();
+
+  isComponentModalActive: boolean = false;
+  register: boolean = false;
+  isPaginated: boolean = true;
+  isPaginationSimple: boolean = false;
+
   columns: { field: string; label: string }[] = [
     {
       field: "name",
@@ -152,11 +164,11 @@ export default class LunchMenu extends Vue {
     });
 
     this.showingItems = this.items.reduce((acc: ShowingItems[], x) => {
-      this.downloadPicture(x.id, x.picutureURL).then(function(value) {
+      this.downloadPictureURL(x.id, x.picutureURL).then(function(url) {
         const record: ShowingItems = {
           name: x.name,
           cal: x.cal,
-          picture: value || "../assets/lunchbox.png",
+          picture: url,
           productType: x.productType,
           price: x.price,
           updateDate: x.updateDate
@@ -166,7 +178,7 @@ export default class LunchMenu extends Vue {
       return acc;
     }, []);
   }
-  async downloadPicture(id: string, pictureURL: string): Promise<string> {
+  async downloadPictureURL(id: string, pictureURL: string): Promise<string> {
     let res: string = "";
     const storageRef = firebase.storage().ref();
 
@@ -187,7 +199,7 @@ export default class LunchMenu extends Vue {
     await this.createShowingList();
   }
   extractDaily() {
-    const now = moment(new Date()).format("YYYY/MM/DD");
+    const now: string = moment(this.selectedDate).format("YYYY/MM/DD");
     const selected: ShowingItems[] = this.showingItems.reduce(
       (acc: ShowingItems[], x) => {
         if (x.updateDate === now) {

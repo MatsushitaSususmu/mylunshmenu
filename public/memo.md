@@ -12,6 +12,9 @@
 - [Vue.js+TypeScriptの書き方一覧](https://qiita.com/ryo2132/items/4d43209ea89ad1297426)
 - [モーダルダイアログ](https://techblo.shikataramuno.com/entry/2018/11/30/111101)
 
+-[ranking20190320_12_4](https://redmonk.com/sogrady/2019/03/20/language-rankings-1-19/)
+-[github2018typescript](https://www.benfrederickson.com/ranking-programming-languages-by-github-users/)
+
 ```bash
 cd <プロジェクト名>
 yarn serve

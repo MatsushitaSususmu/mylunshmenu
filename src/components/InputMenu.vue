@@ -48,17 +48,21 @@
 import { Component, Prop, Emit, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
 import { InputItem } from "@/input.ts";
+import { ItemType } from "@/itemType.ts";
 import * as firebase from "firebase/app";
 import moment from "moment";
 
 @Component
 export default class InputMenu extends Vue {
   today: Date = new Date();
+
   itemName: string = "";
+
   price: number = 0;
   cal: number = 0;
-  type = { id: 1, name: "パン" };
-  itemType = [
+
+  type: ItemType = { id: 1, name: "パン" };
+  itemType: ItemType[] = [
     { id: 1, name: "パン" },
     { id: 2, name: "おにぎり" },
     { id: 3, name: "麺類" },
@@ -69,7 +73,9 @@ export default class InputMenu extends Vue {
     { id: 8, name: "惣菜・おつまみ" },
     { id: 9, name: "菓子" }
   ];
+
   picture: File | null = null;
+
   @Emit("closeForm")
   closeForm() {}
   mount() {
