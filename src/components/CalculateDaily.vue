@@ -13,7 +13,7 @@
           <section>
             <b-table
               striped
-              :data="showingItems"
+              :data="ShowingItem"
               :paginated="isPaginated"
               :per-page="perPage"
               :current-page.sync="currentPage"
@@ -79,7 +79,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
-import { ShowingItems } from "@/showingItems.ts";
+import { ShowingItem } from "@/showingItem.ts";
 import * as firebase from "firebase/app";
 import InputMenu from "./InputMenu.vue";
 
@@ -94,7 +94,7 @@ export default class LunchMenu extends Vue {
   calc_cal: string = "カロリー計算";
   calc_spending: string = "支出計算";
   items: ProductItem[] = [];
-  showingItems: ShowingItems[] = [];
+  ShowingItem: ShowingItem[] = [];
   isComponentModalActive: boolean = false;
   register: boolean = false;
   sortIcon: string = "arrow-up";
@@ -151,9 +151,9 @@ export default class LunchMenu extends Vue {
       });
     });
 
-    this.showingItems = this.items.reduce((acc: ShowingItems[], x) => {
+    this.ShowingItem = this.items.reduce((acc: ShowingItem[], x) => {
       this.downloadPicture(x.id, x.picutureURL).then(function(value) {
-        const record: ShowingItems = {
+        const record: ShowingItem = {
           name: x.name,
           cal: x.cal,
           picture: value || "../assets/lunchbox.png",

@@ -34,9 +34,16 @@
                 field="price"
                 label="価格(税抜)"
                 class="row-item"
+                numeric
                 sortable
               >{{props.row.price}}</b-table-column>
-              <b-table-column field="cal" label="カロリー" class="row-item" sortable>{{props.row.cal}}</b-table-column>
+              <b-table-column
+                field="cal"
+                label="カロリー"
+                class="row-item"
+                numeric
+                sortable　
+              >{{props.row.cal}}</b-table-column>
               <b-table-column
                 field="productType"
                 label="種別"
@@ -68,6 +75,7 @@
         ></b-datepicker>
         <b-button :label="calcDaily" @click="extractDaily" class="is-primary right"></b-button>
         <b-button :label="calcWeekly" @click="extractWeekly" class="is-primary right"></b-button>
+        <b-button label="デモ用" @click="demonstration" class="is-primary right"></b-button>
       </div>
     </div>
   </div>
@@ -80,7 +88,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { ProductItem } from "@/product.ts";
-import { ShowingItems } from "@/showingItems.ts";
+import { ShowingItem } from "@/showingItem.ts";
 import * as firebase from "firebase/app";
 import InputMenu from "./InputMenu.vue";
 import moment from "moment";
@@ -92,7 +100,7 @@ import moment from "moment";
 })
 export default class LunchMenu extends Vue {
   items: ProductItem[] = [];
-  showingItems: ShowingItems[] = [];
+  showingItems: ShowingItem[] = [];
 
   header: string = "テーマ発表2019デモ";
   input: string = "今日のメニューを入力";
@@ -101,7 +109,7 @@ export default class LunchMenu extends Vue {
   calculateResult: string = "";
   sortIcon: string = "arrow-up";
   sortIconSize: string = "is-small";
-  defaultSortDirection: string = "asc";
+  defaultSortDirection: string = "desc";
   paginationPosition: string = "bottom";
 
   currentPage: number = 1;
@@ -117,7 +125,7 @@ export default class LunchMenu extends Vue {
   isPaginated: boolean = true;
   isPaginationSimple: boolean = false;
 
-  columns: { field: string; label: string }[] = [
+  columns: {}[] = [
     {
       field: "name",
       label: "名前"
@@ -151,21 +159,22 @@ export default class LunchMenu extends Vue {
     const productsRef = firebase.firestore().collection("products");
     await productsRef.get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        this.items.push({
-          id: doc.id,
-          name: doc.data().name,
-          cal: doc.data().cal,
-          picutureURL: doc.data().picutureURL,
-          productType: doc.data().productType,
-          price: doc.data().price,
-          updateDate: doc.data().updateDate
-        });
+        // this.items.push({
+        //   id: doc.id,
+        //   name: doc.data().name,
+        //   cal: doc.data().cal,
+        //   picutureURL: doc.data().picutureURL,
+        //   productType: doc.data().productType,
+        //   price: doc.data().price,
+        //   updateDate: doc.data().updateDate
+        // });
+        this.items.push(doc.data() as ProductItem);
       });
     });
 
-    this.showingItems = this.items.reduce((acc: ShowingItems[], x) => {
+    this.showingItems = this.items.reduce((acc: ShowingItem[], x) => {
       this.downloadPictureURL(x.id, x.picutureURL).then(function(url) {
-        const record: ShowingItems = {
+        const record: ShowingItem = {
           name: x.name,
           cal: x.cal,
           picture: url,
@@ -200,10 +209,10 @@ export default class LunchMenu extends Vue {
   }
   extractDaily() {
     const now: string = moment(this.selectedDate).format("YYYY/MM/DD");
-    const selected: ShowingItems[] = this.showingItems.reduce(
-      (acc: ShowingItems[], x) => {
+    const selected: ShowingItem[] = this.showingItems.reduce(
+      (acc: ShowingItem[], x) => {
         if (x.updateDate === now) {
-          const record: ShowingItems = {
+          const record: ShowingItem = {
             name: x.name,
             cal: x.cal,
             picture: x.picture,
@@ -237,10 +246,10 @@ export default class LunchMenu extends Vue {
     const from = moment()
       .subtract(1, "week")
       .format("YYYY/MM/DD");
-    const selected: ShowingItems[] = this.showingItems.reduce(
-      (acc: ShowingItems[], x) => {
+    const selected: ShowingItem[] = this.showingItems.reduce(
+      (acc: ShowingItem[], x) => {
         if (from < x.updateDate && x.updateDate <= now) {
-          const record: ShowingItems = {
+          const record: ShowingItem = {
             name: x.name,
             cal: x.cal,
             picture: x.picture,
@@ -264,6 +273,14 @@ export default class LunchMenu extends Vue {
       .reduce((acc, x) => Number(acc) + Number(x));
     this.calculateResult = `${from}~${now}の支出合計：${this.totalSpending}円(税込)\n
     摂取カロリー：${this.totalCal}cal`;
+  }
+  demonstration() {
+    //demo 詳細ソート？
+    alert(`${this.showingItems[0].name}
+    ${typeof this.showingItems[0].price}
+    ${this.showingItems[0].cal}
+    ${this.showingItems[0].productType}
+    ${this.showingItems[0].updateDate}`);
   }
 }
 </script>

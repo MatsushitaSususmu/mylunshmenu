@@ -102,9 +102,13 @@ export default class InputMenu extends Vue {
       updateDate: moment(new Date()).format("YYYY/MM/DD")
     };
 
-    productsRef.add(input).then(ref => {
-      console.log("Added document with ID: ", ref.id);
-    });
+    // productsRef.add(input).then(ref => {
+    productsRef
+      .doc()
+      .set(input)
+      .then(ref => {
+        console.log("Added document with ID: ");
+      });
 
     if (this.picture) {
       const storageRef = firebase.storage().ref();
