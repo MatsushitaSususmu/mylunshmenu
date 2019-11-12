@@ -101,6 +101,14 @@ import moment from "moment";
 export default class LunchMenu extends Vue {
   items: ProductItem[] = [];
   showingItems: ShowingItem[] = [];
+  noItem: ShowingItem = {
+    name: "",
+    cal: 0,
+    picture: "",
+    productType: "",
+    price: 0,
+    updateDate: ""
+  };
 
   header: string = "テーマ発表2019デモ";
   input: string = "今日のメニューを入力";
@@ -209,25 +217,31 @@ export default class LunchMenu extends Vue {
   }
   extractDaily() {
     const now: string = moment(this.selectedDate).format("YYYY/MM/DD");
-    const selected: ShowingItem[] = this.showingItems.reduce(
-      (acc: ShowingItem[], x) => {
-        if (x.updateDate === now) {
-          const record: ShowingItem = {
-            name: x.name,
-            cal: x.cal,
-            picture: x.picture,
-            productType: x.productType,
-            price: x.price,
-            updateDate: x.updateDate
-          };
-          acc.push(record);
-        }
-        return acc;
-      },
-      []
-    );
+    let selected: ShowingItem[] | undefined;
+    selected = this.showingItems.reduce((acc: ShowingItem[], x) => {
+      if (x.updateDate === now) {
+        const record: ShowingItem = {
+          name: x.name,
+          cal: x.cal,
+          picture: x.picture,
+          productType: x.productType,
+          price: x.price,
+          updateDate: x.updateDate
+        };
+        acc.push(record);
+      }
+      return acc;
+    }, []);
+    console.log("reduced");
+    if (!(selected.length > 0)) {
+      this.calculateResult = `
+    ${now}の
+    支出合計：0円(税込)
+    摂取カロリー：0cal`;
+      return;
+    }
 
-    this.showingItems = selected;
+    this.showingItems = selected || this.noItem;
     this.totalSpending = Math.floor(
       selected.map(x => x.price).reduce((acc, x) => Number(acc) + Number(x)) *
         this.taxRate
