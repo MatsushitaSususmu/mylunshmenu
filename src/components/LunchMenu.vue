@@ -75,7 +75,7 @@
         ></b-datepicker>
         <b-button :label="calcDaily" @click="extractDaily" class="is-primary right"></b-button>
         <b-button :label="calcWeekly" @click="extractWeekly" class="is-primary right"></b-button>
-        <b-button label="デモ用" @click="demonstration" class="is-primary right"></b-button>
+        <b-button label="今日のおすすめ" @click="recommend" class="is-primary right"></b-button>
       </div>
     </div>
   </div>
@@ -288,13 +288,36 @@ export default class LunchMenu extends Vue {
     this.calculateResult = `${from}~${now}の支出合計：${this.totalSpending}円(税込)\n
     摂取カロリー：${this.totalCal}cal`;
   }
-  demonstration() {
-    //demo 詳細ソート？
-    alert(`${this.showingItems[0].name}
-    ${typeof this.showingItems[0].price}
-    ${this.showingItems[0].cal}
-    ${this.showingItems[0].productType}
-    ${this.showingItems[0].updateDate}`);
+  recommend() {
+    //demo
+    const budget: number = 500;
+    let todaysRecommend: string = "";
+    let totalAmount: number = 0;
+    let selected: number[] = [];
+
+    while (true) {
+      let idx: number = Math.floor(
+        Math.random() * Math.floor(this.items.length)
+      );
+      if (selected.indexOf(idx) != -1) return;
+      selected.push(idx);
+
+      if (totalAmount + this.items[idx].price < budget) {
+        todaysRecommend += `
+        ${this.items[idx].name}
+        ${this.items[idx].price}円
+        ${this.items[idx].cal}カロリー
+        `;
+        totalAmount += this.items[idx].price;
+      } else {
+        break;
+      }
+    }
+
+    alert(`今日のおすすめは
+    ${todaysRecommend}
+    計　${totalAmount}円
+    です！`);
   }
 }
 </script>
