@@ -4,37 +4,19 @@
       <div class="card">
         <div class="card-header"></div>
         <div class="card-content">
-          <b-field label="商品名(*)">
-            <b-input type="text" v-model="itemName" required></b-input>
-          </b-field>
-          <b-field label="価格(*)">
-            <b-input type="number" v-model="price" required></b-input>
-          </b-field>
-          <b-field label="カロリー">
-            <b-input type="number" v-model="cal"></b-input>
-          </b-field>
-          <b-field label="種別">
-            <b-select v-model="type">
-              <option v-for="option in itemType" :value="option" :key="option.id">{{ option.name }}</option>
-            </b-select>
-          </b-field>
-          <b-field label="写真">
-            <b-upload v-model="picture" v-if="!picture">
-              <div class="button">
-                <b-icon icon="upload"></b-icon>
-                <p>Click to upload</p>
-              </div>
-            </b-upload>
-            <b-input class="file-name" v-else :value="picture.name" disabled></b-input>
-          </b-field>
-          <div class="card-footer">
-            <div>
-              <b-button label="登録" @click="registerStore()" class="is-primary"></b-button>
-            </div>
-            <div class="right-button">
-              <b-button label="閉じる" @click="closeForm()"></b-button>
-            </div>
-          </div>
+          <template slot-scope="props">
+            <b-field field="name" label="商品名" class="row-item" sortable>{{props.row.name}}</b-field>
+            <b-field field="picture" label="写真" class="row-item" sortable>
+              <img :src="props.row.picture" width="80" height="58" />
+            </b-field>
+            <b-field
+              field="price"
+              label="価格(税抜)"
+              class="row-item"
+              numeric
+              sortable
+            >{{props.row.price}}</b-field>
+          </template>
         </div>
       </div>
     </div>
@@ -51,6 +33,7 @@ import { InputItem } from "@/input.ts";
 import { ItemType } from "@/itemType.ts";
 import * as firebase from "firebase/app";
 import moment from "moment";
+import { ShowingItem } from "../showingItem";
 
 @Component
 export default class InputMenu extends Vue {
@@ -75,18 +58,16 @@ export default class InputMenu extends Vue {
   ];
 
   picture: File | null = null;
-
+  @Prop()
+  recommendProps?: ShowingItem;
   @Emit("closeForm")
   closeForm() {}
   mount() {
     this.init();
   }
   init() {
-    this.itemName = "";
-    this.price = 0;
-    this.cal = 0;
-    this.type = { id: 1, name: "パン" };
-    this.picture = null;
+    console.log("recommended...");
+    console.dir(this.recommendProps);
   }
   registerStore() {
     if (!this.itemName || !this.price) {

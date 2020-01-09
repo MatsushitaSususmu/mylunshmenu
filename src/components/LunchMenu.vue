@@ -65,6 +65,15 @@
           <input-menu v-if="isComponentModalActive" @register="closeForm" @closeForm="closeForm"></input-menu>
         </b-modal>
       </div>
+      <div>
+        <b-modal :active.sync="isRecommendModalActive" has-modal-card>
+          <recommend-menu
+            v-if="isRecommendModalActive"
+            @closeForm="closeForm"
+            @v-bind="recommendProps"
+          ></recommend-menu>
+        </b-modal>
+      </div>
       <div class="card-footer right">
         <b-button :label="input" @click="openForm" class="is-primary"></b-button>
         <b-datepicker
@@ -91,16 +100,19 @@ import { ProductItem } from "@/product.ts";
 import { ShowingItem } from "@/showingItem.ts";
 import * as firebase from "firebase/app";
 import InputMenu from "./InputMenu.vue";
+import RecommendMenu from "./RecommendMenu.vue";
 import moment from "moment";
 
 @Component({
   components: {
-    InputMenu
+    InputMenu,
+    RecommendMenu
   }
 })
 export default class LunchMenu extends Vue {
   items: ProductItem[] = [];
   showingItems: ShowingItem[] = [];
+  recommendProps: ShowingItem[] = [];
   noItem: ShowingItem = {
     name: "",
     cal: 0,
@@ -129,6 +141,7 @@ export default class LunchMenu extends Vue {
   selectedDate: Date = new Date();
 
   isComponentModalActive: boolean = false;
+  isRecommendModalActive: boolean = false;
   register: boolean = false;
   isPaginated: boolean = true;
   isPaginationSimple: boolean = false;
@@ -167,15 +180,6 @@ export default class LunchMenu extends Vue {
     const productsRef = firebase.firestore().collection("products");
     await productsRef.get().then(querySnapshot => {
       querySnapshot.forEach(doc => {
-        // this.items.push({
-        //   id: doc.id,
-        //   name: doc.data().name,
-        //   cal: doc.data().cal,
-        //   picutureURL: doc.data().picutureURL,
-        //   productType: doc.data().productType,
-        //   price: doc.data().price,
-        //   updateDate: doc.data().updateDate
-        // });
         this.items.push(doc.data() as ProductItem);
       });
     });
@@ -288,35 +292,49 @@ export default class LunchMenu extends Vue {
     this.calculateResult = `${from}~${now}の支出合計：${this.totalSpending}円(税込)\n
     摂取カロリー：${this.totalCal}cal`;
   }
+  /**
+   * 予算の範囲内でランダムな商品名（重複不可）、価格、合計金額を表示
+   */
   recommend() {
-    //demo
-    const budget: number = 500;
-    let todaysRecommend: string = "";
+    // 予算
+    const budget: number = 600;
+    // 合計金額
     let totalAmount: number = 0;
-    let selected: number[] = [];
+    // おすすめ表示テキスト
+    let todaysRecommend: string = "";
+    // 一度選んだ商品のインデックスリスト
+    let selectedIdx: number[] = [];
+    // 一度選んだ商品の種類別リスト
+    let selectedType: string[] = [];
 
     while (true) {
+      // 商品のインデックス
       let idx: number = Math.floor(
         Math.random() * Math.floor(this.items.length)
       );
-      if (selected.indexOf(idx) != -1) return;
-      selected.push(idx);
+      // 重複チェック
+      if (selectedIdx.includes(idx)) return;
+      selectedIdx.push(idx);
 
-      if (totalAmount + this.items[idx].price < budget) {
+      if (selectedType.includes(this.items[idx].productType)) return;
+      selectedType.push(this.items[idx].productType);
+
+      // 予算の限りおすすめに追加
+      if (this.items[idx].price + totalAmount < budget) {
         todaysRecommend += `
         ${this.items[idx].name}
-        ${this.items[idx].price}円
-        ${this.items[idx].cal}カロリー
-        `;
+        ${this.items[idx].price}円`;
         totalAmount += this.items[idx].price;
+        this.recommendProps.push(this.showingItems[idx]);
       } else {
         break;
       }
     }
 
+    // 表示
     alert(`今日のおすすめは
     ${todaysRecommend}
-    計　${totalAmount}円
+    計 ${totalAmount}円
     です！`);
   }
 }
